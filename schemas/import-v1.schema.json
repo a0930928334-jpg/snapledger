@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:snapledger:schema:import:v1",
+  "title": "SnapLedger import document v1",
+  "description": "Structured transcription of one batch of bank-app screenshots, produced by an LLM (or by the app itself in future versions) and consumed by SnapLedger's import pipeline.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "source", "transactions", "dailyBalances", "warnings"],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["extractedBy", "screenshotCount"],
+      "properties": {
+        "extractedBy": {
+          "enum": ["chatgpt", "claude", "app", "other"],
+          "description": "Who produced this document."
+        },
+        "institution": {
+          "type": ["string", "null"],
+          "description": "Informational only, e.g. \"HSBC UK\". Never an account number."
+        },
+        "screenshotCount": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "transactions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/transaction" }
+    },
+    "dailyBalances": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/dailyBalance" }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Free-text notes about anything the extractor skipped, inferred or could not read."
+    }
+  },
+  "$defs": {
+    "date": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+      "description": "ISO 8601 calendar date (YYYY-MM-DD), or null when not determinable."
+    },
+    "unsignedAmount": {
+      "type": ["string", "null"],
+      "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,3})?$",
+      "description": "Absolute value as a decimal string with no currency symbol or thousands separators, e.g. \"1234.50\". Null when unreadable."
+    },
+    "signedAmount": {
+      "type": "string",
+      "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]{1,3})?$"
+    },
+    "currency": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Z]{3}$",
+      "description": "ISO 4217 code, e.g. GBP, CNY, EUR."
+    },
+    "categoryCode": {
+      "type": ["string", "null"],
+      "pattern": "^[a-z_]+\\.[a-z_]+$",
+      "description": "Second-level category code from the list given in the prompt, e.g. dining.takeaway. Null when unsure."
+    },
+    "transaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "screenshot", "position", "date", "direction", "amount", "currency",
+        "rawDescription", "merchant", "counterpartyType", "suggestedType",
+        "suggestedCategory", "status", "uncertainFields", "note"
+      ],
+      "properties": {
+        "screenshot": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "1-based index of the screenshot, in the order the images were sent."
+        },
+        "position": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "1-based order of this row within its screenshot, top to bottom."
+        },
+        "date": { "$ref": "#/$defs/date" },
+        "direction": {
+          "enum": ["out", "in", null],
+          "description": "out = money left the account, in = money arrived."
+        },
+        "amount": { "$ref": "#/$defs/unsignedAmount" },
+        "currency": { "$ref": "#/$defs/currency" },
+        "rawDescription": {
+          "type": "string",
+          "minLength": 1,
+          "description": "All text lines of the row except date and amount, verbatim, joined with \" | \"."
+        },
+        "merchant": {
+          "type": ["string", "null"],
+          "description": "Normalised merchant brand or person name, e.g. \"Tesco\". Null when unclear."
+        },
+        "counterpartyType": {
+          "enum": ["merchant", "person", "unknown"]
+        },
+        "suggestedType": {
+          "enum": ["expense", "income", "refund", "transfer", null]
+        },
+        "suggestedCategory": { "$ref": "#/$defs/categoryCode" },
+        "status": {
+          "enum": ["posted", "pending"]
+        },
+        "uncertainFields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["date", "direction", "amount", "currency", "rawDescription", "merchant", "counterpartyType", "suggestedType", "suggestedCategory"]
+          }
+        },
+        "note": {
+          "type": ["string", "null"],
+          "description": "Short explanation for anything inferred or uncertain."
+        }
+      }
+    },
+    "dailyBalance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date", "endOfDayBalance", "currency", "screenshot"],
+      "properties": {
+        "date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+        },
+        "endOfDayBalance": { "$ref": "#/$defs/signedAmount" },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "screenshot": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0",
+  "source": { "extractedBy": "claude", "institution": "HSBC UK", "screenshotCount": 1 },
+  "transactions": [
+    {
+      "screenshot": 1, "position": 1, "date": "2026-09-20", "direction": "in",
+      "amount": "25.00", "currency": "GBP",
+      "rawDescription": "MARKS&SPENCER PLC | LEEDS GB", "merchant": "Marks & Spencer",
+      "counterpartyType": "merchant", "suggestedType": "refund",
+      "suggestedCategory": "shopping.clothing", "status": "posted",
+      "uncertainFields": ["suggestedCategory"],
+      "note": "Incoming payment from a retailer; most likely a refund."
+    },
+    {
+      "screenshot": 1, "position": 2, "date": "2026-09-20", "direction": "in",
+      "amount": "15.00", "currency": "GBP",
+      "rawDescription": "Jamie Li | hotpot share", "merchant": "Jamie Li",
+      "counterpartyType": "person", "suggestedType": "income",
+      "suggestedCategory": "income.personal", "status": "posted",
+      "uncertainFields": [], "note": null
+    },
+    {
+      "screenshot": 1, "position": 3, "date": "2026-09-20", "direction": "out",
+      "amount": null, "currency": "GBP",
+      "rawDescription": "COSTA COFFEE | LEEDS GB", "merchant": "Costa Coffee",
+      "counterpartyType": "merchant", "suggestedType": "expense",
+      "suggestedCategory": "dining.cafe", "status": "posted",
+      "uncertainFields": ["amount"],
+      "note": "Amount is blurred and unreadable."
+    },
+    {
+      "screenshot": 1, "position": 4, "date": "2026-09-19", "direction": "out",
+      "amount": "11.99", "currency": "GBP",
+      "rawDescription": "SPOTIFY | LONDON", "merchant": "Spotify",
+      "counterpartyType": "merchant", "suggestedType": "expense",
+      "suggestedCategory": "subscriptions.streaming", "status": "posted",
+      "uncertainFields": [], "note": null
+    }
+  ],
+  "dailyBalances": [
+    { "date": "2026-09-20", "endOfDayBalance": "636.80", "currency": "GBP", "screenshot": 1 },
+    { "date": "2026-09-19", "endOfDayBalance": "600.00", "currency": "GBP", "screenshot": 1 }
+  ],
+  "warnings": [
+    "Skipped 2 transactions listed under Pending.",
+    "Screenshot 1, position 3: amount unreadable."
+  ]
+}

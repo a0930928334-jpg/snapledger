@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0",
+  "source": { "extractedBy": "chatgpt", "institution": "HSBC UK", "screenshotCount": 2 },
+  "transactions": [
+    {
+      "screenshot": 1, "position": 1, "date": "2026-09-16", "direction": "out",
+      "amount": "3.50", "currency": "GBP",
+      "rawDescription": "PRET A MANGER | LEEDS GB", "merchant": "Pret A Manger",
+      "counterpartyType": "merchant", "suggestedType": "expense",
+      "suggestedCategory": "dining.cafe", "status": "posted",
+      "uncertainFields": [], "note": null
+    },
+    {
+      "screenshot": 1, "position": 2, "date": "2026-09-16", "direction": "out",
+      "amount": "3.50", "currency": "GBP",
+      "rawDescription": "PRET A MANGER | LEEDS GB", "merchant": "Pret A Manger",
+      "counterpartyType": "merchant", "suggestedType": "expense",
+      "suggestedCategory": "dining.cafe", "status": "posted",
+      "uncertainFields": [], "note": null
+    },
+    {
+      "screenshot": 1, "position": 3, "date": "2026-09-16", "direction": "out",
+      "amount": "9.80", "currency": "GBP",
+      "rawDescription": "UBER *TRIP | HELP.UBER.COM", "merchant": "Uber",
+      "counterpartyType": "merchant", "suggestedType": "expense",
+      "suggestedCategory": "transport.taxi", "status": "posted",
+      "uncertainFields": [], "note": null
+    },
+    {
+      "screenshot": 2, "position": 1, "date": "2026-09-16", "direction": "out",
+      "amount": "3.50", "currency": "GBP",
+      "rawDescription": "PRET A MANGER | LEEDS GB", "merchant": "Pret A Manger",
+      "counterpartyType": "merchant", "suggestedType": "expense",
+      "suggestedCategory": "dining.cafe", "status": "posted",
+      "uncertainFields": ["date"],
+      "note": "Day header cropped at top of screenshot 2; date taken from the last header in screenshot 1."
+    },
+    {
+      "screenshot": 2, "position": 2, "date": "2026-09-16", "direction": "out",
+      "amount": "9.80", "currency": "GBP",
+      "rawDescription": "UBER *TRIP | HELP.UBER.COM", "merchant": "Uber",
+      "counterpartyType": "merchant", "suggestedType": "expense",
+      "suggestedCategory": "transport.taxi", "status": "posted",
+      "uncertainFields": ["date"],
+      "note": "Day header cropped at top of screenshot 2; date taken from the last header in screenshot 1."
+    },
+    {
+      "screenshot": 2, "position": 3, "date": "2026-09-15", "direction": "out",
+      "amount": "18.20", "currency": "GBP",
+      "rawDescription": "DELIVEROO | LONDON", "merchant": "Deliveroo",
+      "counterpartyType": "merchant", "suggestedType": "expense",
+      "suggestedCategory": "dining.takeaway", "status": "posted",
+      "uncertainFields": [], "note": null
+    }
+  ],
+  "dailyBalances": [
+    { "date": "2026-09-16", "endOfDayBalance": "825.30", "currency": "GBP", "screenshot": 1 },
+    { "date": "2026-09-15", "endOfDayBalance": "842.10", "currency": "GBP", "screenshot": 2 }
+  ],
+  "warnings": [
+    "Screenshot 2 starts mid-day without a visible date header; positions 1-2 inherit the date from screenshot 1."
+  ]
+}

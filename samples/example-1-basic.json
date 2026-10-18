@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "source": { "extractedBy": "claude", "institution": "HSBC UK", "screenshotCount": 1 },
+  "transactions": [
+    {
+      "screenshot": 1, "position": 1, "date": "2026-09-15", "direction": "out",
+      "amount": "12.35", "currency": "GBP",
+      "rawDescription": "TESCO STORES 3021 | LEEDS GB", "merchant": "Tesco",
+      "counterpartyType": "merchant", "suggestedType": "expense",
+      "suggestedCategory": "groceries.supermarket", "status": "posted",
+      "uncertainFields": [], "note": null
+    },
+    {
+      "screenshot": 1, "position": 2, "date": "2026-09-15", "direction": "out",
+      "amount": "2.55", "currency": "GBP",
+      "rawDescription": "GREGGS | LEEDS GB", "merchant": "Greggs",
+      "counterpartyType": "merchant", "suggestedType": "expense",
+      "suggestedCategory": "dining.fast_food", "status": "posted",
+      "uncertainFields": [], "note": null
+    },
+    {
+      "screenshot": 1, "position": 3, "date": "2026-09-15", "direction": "out",
+      "amount": "8.00", "currency": "GBP",
+      "rawDescription": "Alex Chen | dinner", "merchant": "Alex Chen",
+      "counterpartyType": "person", "suggestedType": "expense",
+      "suggestedCategory": "personal_transfer.general", "status": "posted",
+      "uncertainFields": [], "note": null
+    },
+    {
+      "screenshot": 1, "position": 4, "date": "2026-09-14", "direction": "out",
+      "amount": "3.10", "currency": "GBP",
+      "rawDescription": "TFL TRAVEL CH | TFL.GOV.UK/CP", "merchant": "TfL",
+      "counterpartyType": "merchant", "suggestedType": "expense",
+      "suggestedCategory": "transport.public", "status": "posted",
+      "uncertainFields": [], "note": null
+    }
+  ],
+  "dailyBalances": [
+    { "date": "2026-09-15", "endOfDayBalance": "1509.50", "currency": "GBP", "screenshot": 1 },
+    { "date": "2026-09-14", "endOfDayBalance": "1532.40", "currency": "GBP", "screenshot": 1 }
+  ],
+  "warnings": []
+}
