@@ -1,7 +1,7 @@
-# SnapLedger：需求与设计文档（待确认稿 v0.1）
+# SnapLedger：需求与设计文档（v1.0，已确认）
 
-> 日期：2026-10-18 状态：**待 Hongyi 确认**。确认前不写代码，也不建仓库。
-> 仓库名暂定 `snapledger`，协议 MIT。名字随时可以改。
+> 日期：2026-10-18 状态：**已确认**（2026-10-18），进入开发阶段，当前里程碑见 [06-milestones.md](06-milestones.md)。
+> 仓库名 `snapledger`，协议 MIT。
 
 ## 文档目录
 
@@ -15,6 +15,7 @@
 | 4 | [04-ai-prompt.md](04-ai-prompt.md) | 给 ChatGPT 或 Claude 用的截图识别提示词模板 |
 | 5 | [05-categories-and-rules.md](05-categories-and-rules.md) | 默认分类表和自动分类规则设计 |
 | 6 | [06-milestones.md](06-milestones.md) | 开发里程碑和完成标准 |
+| 7 | [adr/](adr/) | 架构决策记录（ADR） |
 
 ## 已确认的决策汇总
 

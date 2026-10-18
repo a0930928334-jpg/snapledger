@@ -1,0 +1,10 @@
+# Overrides on top of detekt's default rule set (buildUponDefaultConfig = true).
+naming:
+  FunctionNaming:
+    # Composable functions are PascalCase by convention.
+    ignoreAnnotated: ['Composable']
+
+style:
+  # Formatting is ktlint's job.
+  MaxLineLength:
+    active: false

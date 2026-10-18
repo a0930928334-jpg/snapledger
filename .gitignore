@@ -12,8 +12,6 @@
 *.webp
 *.gif
 !docs/images/**
-# Android launcher icons are generated, contain no data
-!androidApp/src/main/res/**/*.png
 
 # Private data folders and backups
 private/

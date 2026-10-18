@@ -11,7 +11,7 @@
 | 序列化 | kotlinx.serialization | 支持 KMP；可以开启严格模式，遇到未知字段直接报错 |
 | 日期 | kotlinx-datetime | KMP 标准的日期库 |
 | 依赖注入 | Koin | 支持 KMP，比 Hilt 轻量 |
-| 页面状态和导航 | JetBrains 发布的多平台版 lifecycle-viewmodel 和 navigation-compose | 写法和安卓官方一致（具体版本开发时再确认） |
+| 页面状态和导航 | JetBrains 发布的多平台版 lifecycle-viewmodel 和 navigation-compose | 写法和安卓官方一致（版本见下面的 1.1 节） |
 | 图表 | 先用 Compose Canvas 自己画（环形图、柱状图） | 我不确定目前有没有成熟、同时支持安卓和桌面的图表库，M4 开始前再调研；需要的图表很简单，自己画工作量可控 |
 | 加密 | 标准库 `javax.crypto`（AES-GCM、PBKDF2） | 安卓和桌面端都跑在 JVM 上，可以共用一份实现 |
 | 构建 | Gradle（Kotlin DSL）+ version catalog | |
@@ -19,6 +19,30 @@
 | 代码质量 | ktlint、detekt、gitleaks | |
 | 打包 | 安卓 APK；Windows 用 Compose 自带的打包工具生成 MSI | |
 | **第二阶段后端** | Java 21 + Spring Boot 3 + PostgreSQL | 你最擅长的技术栈，也是英国后端岗位的主流 |
+
+### 1.1 版本基线（2026-10-18 核实）
+
+所有版本集中在 `gradle/libs.versions.toml`。规则：只用稳定版，并且发布满两周。
+
+| 组件 | 版本 | 备注 |
+|---|---|---|
+| Kotlin | 2.4.20 | 官方测试过的范围：Gradle ≤ 9.7、AGP ≤ 9.3.x |
+| Gradle | 9.7.1 | Wrapper 带 SHA-256 校验 |
+| Android Gradle Plugin | 9.3.3 | 没选 9.4：超出 Kotlin 2.4.20 测试过的范围 |
+| Compose Multiplatform | 1.12.1 | 要求 Android **compileSdk ≥ 37** |
+| Material 3（Compose MP） | 1.9.0 | 从 Compose MP 1.9 起单独发版，这是最新的稳定版 |
+| SQLDelight | 2.4.0 | 2.4.1 发布不满两周 |
+| Koin | 4.2.2 | |
+| kotlinx-serialization / datetime / coroutines | 1.11.0 / 0.8.0 / 1.11.0 | |
+| lifecycle-viewmodel / navigation-compose（JetBrains 多平台版） | 2.11.0 / 2.9.2 | |
+| ktlint / detekt / Kover | 1.8.0 / 1.23.8 / 0.9.11 | detekt 1.23.8 在 Kotlin 2.4 下实测可用（不做类型解析） |
+| gitleaks | 8.30.1 | 本地 pre-commit 和 CI 用同一个版本 |
+
+Android：`compileSdk = 37`、`targetSdk = 36`、`minSdk = 26`。JDK 21 编译，字节码目标 17。
+
+**AGP 9 带来的结构变化**：KMP 模块里的 Android 目标改用 `com.android.kotlin.multiplatform.library` 插件，不能再在同一个模块里打 APK，所以 APK 只在独立的 `androidApp` 模块里生成（这正好符合第 2 节的模块划分）。AGP 9 自己编译 Kotlin，`androidApp` 不再需要 `kotlin-android` 插件。
+
+`core` 只有 JVM 一个编译目标（安卓也跑 JVM 字节码，可以直接依赖），这样从构建配置上就保证了它不会引入任何 Android API。
 
 ## 2. 整体架构
 
