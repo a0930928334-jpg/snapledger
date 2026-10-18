@@ -7,6 +7,9 @@
 | [001](001-kotlin-multiplatform.md) | 用 Kotlin Multiplatform + Compose Multiplatform | 已采纳 |
 | [002](002-local-first-offline.md) | 本地优先，MVP 不联网 | 已采纳 |
 | [003](003-ai-extraction-outside-app.md) | AI 识别放在 App 外，App 只认导入格式 v1 | 已采纳 |
+| [011](011-pdf-statement-local-parsing.md) | PDF 对账单在本地确定性解析，作为每月的权威校准（v1.1） | 已采纳 |
+
+004–010 已在 [02 第 8 节](../02-architecture.md) 列出，按里程碑写出（M1 写 004–007）。
 
 模板：
 
