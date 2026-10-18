@@ -1,0 +1,67 @@
+# ---------------------------------------------------------------
+# Privacy: real bank data must never enter this repository.
+# ---------------------------------------------------------------
+
+# Screenshots and images. Fictional images for docs/README are
+# whitelisted explicitly below.
+*.png
+*.jpg
+*.jpeg
+*.heic
+*.heif
+*.webp
+*.gif
+!docs/images/**
+# Android launcher icons are generated, contain no data
+!androidApp/src/main/res/**/*.png
+
+# Private data folders and backups
+private/
+*.slbackup
+*.db
+*.sqlite
+*.sqlite3
+
+# Secrets and signing material
+local.properties
+.env
+.env.*
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+google-services.json
+secrets.properties
+
+# ---------------------------------------------------------------
+# Build output
+# ---------------------------------------------------------------
+.gradle/
+.kotlin/
+build/
+out/
+captures/
+*.apk
+*.aab
+*.msi
+*.dmg
+*.deb
+*.hprof
+*.log
+
+# ---------------------------------------------------------------
+# IDE and OS files
+# ---------------------------------------------------------------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.fleet/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude Code local settings
+.claude/settings.local.json
