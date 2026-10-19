@@ -138,6 +138,7 @@ fun ImportScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun InputPane(
     ledger: LedgerState,
@@ -145,6 +146,7 @@ private fun InputPane(
 ) {
     @Suppress("DEPRECATION")
     val clipboard = LocalClipboardManager.current
+    val copyPrompt = rememberCopyPrompt(ledger)
     LazyColumn(
         modifier = Modifier.padding(horizontal = 16.dp).widthIn(max = 900.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -159,12 +161,16 @@ private fun InputPane(
         }
         state.message?.let { message -> item { Banner(message, StatusColors.good) } }
         item {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 CtaButton("从剪贴板导入", onClick = {
                     state.text = clipboard.getText()?.text.orEmpty()
                     state.analyse()
                 })
                 SecondaryButton("解析粘贴的内容", onClick = state::analyse, enabled = state.text.isNotBlank())
+                SecondaryButton("复制 AI 提示词", onClick = {
+                    copyPrompt()
+                    state.message = "已复制 AI 提示词。粘贴到 ChatGPT 或 Claude 的项目指令里，以后发截图时就不用再找了。"
+                })
             }
         }
         item {

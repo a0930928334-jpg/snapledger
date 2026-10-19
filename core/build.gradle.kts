@@ -29,4 +29,5 @@ kotlin {
 // Tests read the fictional examples straight from samples/ so docs, schema and tests stay in sync.
 tasks.withType<Test>().configureEach {
     systemProperty("snapledger.samplesDir", rootProject.file("samples").absolutePath)
+    systemProperty("snapledger.docsDir", rootProject.file("docs").absolutePath)
 }

@@ -85,6 +85,7 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("设置", style = SnapTheme.type.pageTitle)
+        PromptCard(ledger)
         Text("加密备份 · 两台设备之间同步", style = SnapTheme.type.title)
         Text(
             "导出：把这台设备上的全部数据加密成一个 .slbackup 文件。导入：把另一台设备的备份合并进来，" +

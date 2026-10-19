@@ -108,6 +108,9 @@ class ImportFlowUiTest {
 
         rule.onNodeWithText("设置").performClick()
         rule.onNodeWithText("导出备份…").assertExists()
+        rule.onNodeWithText("查看全文").performClick()
+        rule.onNodeWithText("You are a transcription engine for SnapLedger", substring = true).assertExists()
+        rule.onNodeWithText("dining.cafe — coffee shops", substring = true).assertExists()
         screenshot("6-settings")
     }
 }

@@ -41,7 +41,7 @@ compose.desktop {
             // Exe = installer wizard, Msi = Windows Installer package. `createDistributable` gives a portable folder.
             targetFormats(TargetFormat.Exe, TargetFormat.Msi)
             packageName = "SnapLedger"
-            packageVersion = "0.3.0"
+            packageVersion = "0.4.0"
             description = "Local-first personal finance ledger"
             vendor = "SnapLedger"
             // Bundled runtime: java.sql for the SQLite JDBC driver (found with :desktopApp:suggestRuntimeModules).
