@@ -59,7 +59,7 @@ git config core.hooksPath .githooks
 
 ## Documentation
 
-Design documents (in Chinese) are in [`docs/`](docs/README.md); architecture decisions are in [`docs/adr/`](docs/adr/README.md). The import format is defined by [`schemas/import-v1.schema.json`](schemas/import-v1.schema.json), with fictional examples in [`samples/`](samples/).
+The visual design system is [`DESIGN.md`](DESIGN.md) (light and dark themes). Design documents (in Chinese) are in [`docs/`](docs/README.md); architecture decisions are in [`docs/adr/`](docs/adr/README.md). The import format is defined by [`schemas/import-v1.schema.json`](schemas/import-v1.schema.json), with fictional examples in [`samples/`](samples/).
 
 ## License
 

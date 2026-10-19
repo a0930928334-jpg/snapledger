@@ -9,12 +9,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,13 +26,15 @@ import androidx.compose.ui.unit.dp
 import dev.snapledger.core.ledger.CategoryTotal
 import dev.snapledger.core.ledger.LedgerViews
 import dev.snapledger.core.ledger.MonthSummary
+import dev.snapledger.ui.theme.SnapShapes
+import dev.snapledger.ui.theme.SnapTheme
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-/** Home screen: this month's spending, income and where the money went. */
+/** Home screen: this month's spending (the one hero card), income and where the money went. */
 @OptIn(ExperimentalTime::class)
 @Composable
 fun OverviewScreen(
@@ -50,9 +48,12 @@ fun OverviewScreen(
         remember(ledger.snapshot, year, month) { LedgerViews.monthSummary(ledger.snapshot, ledger.accountId, year, month, ledger.currency) }
     var expanded by remember { mutableStateOf<String?>(null) }
 
-    LazyColumn(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    LazyColumn(
+        modifier = Modifier.padding(horizontal = 16.dp).widthIn(max = 760.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
         item {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 12.dp)) {
                 TextButton(onClick = {
                     if (month == 1) {
                         year--
@@ -60,8 +61,8 @@ fun OverviewScreen(
                     } else {
                         month--
                     }
-                }) { Text("‹ 上个月") }
-                Text("${year}年${month}月", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
+                }) { Text("‹ 上个月", color = SnapTheme.colors.accent) }
+                Text("${year}年${month}月", style = SnapTheme.type.pageTitle, modifier = Modifier.weight(1f))
                 TextButton(onClick = {
                     if (month == 12) {
                         year++
@@ -69,28 +70,38 @@ fun OverviewScreen(
                     } else {
                         month++
                     }
-                }) { Text("下个月 ›") }
+                }) { Text("下个月 ›", color = SnapTheme.colors.accent) }
             }
         }
-        item { Button(onClick = onImport) { Text("＋ 导入流水") } }
-        item { Totals(summary) }
-        item { Text("钱花在哪", style = MaterialTheme.typography.titleMedium) }
-        if (summary.byCategory.isEmpty()) {
-            item { Text("这个月还没有支出记录。") }
+        item { CtaButton("＋ 导入流水", onImport) }
+        item { HeroCard(summary) }
+        item {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                StatCard("本月收入", money(summary.incomeMinor, summary.currency), Modifier.weight(1f))
+                StatCard("上月支出", money(summary.previousSpendingMinor, summary.currency), Modifier.weight(1f))
+            }
         }
-        items(summary.byCategory, key = { it.code }) { top ->
-            CategoryBar(top, summary, expanded == top.code) { expanded = if (expanded == top.code) null else top.code }
+        item { Text("钱花在哪", style = SnapTheme.type.title, modifier = Modifier.padding(top = 4.dp)) }
+        item {
+            SnapCard(modifier = Modifier.fillMaxWidth(), padding = 20.dp) {
+                if (summary.byCategory.isEmpty()) {
+                    Text("这个月还没有支出记录。", color = SnapTheme.colors.mute)
+                }
+                summary.byCategory.forEach { top ->
+                    CategoryBar(top, summary, expanded == top.code) { expanded = if (expanded == top.code) null else top.code }
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun Totals(summary: MonthSummary) {
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        StatCard("本月支出", money(summary.spendingMinor, summary.currency), Modifier.weight(1f))
-        StatCard("本月收入", money(summary.incomeMinor, summary.currency), Modifier.weight(1f))
-        StatCard("结余", money(summary.netMinor, summary.currency), Modifier.weight(1f))
-        StatCard("上月支出", money(summary.previousSpendingMinor, summary.currency), Modifier.weight(1f))
+private fun HeroCard(summary: MonthSummary) {
+    val c = SnapTheme.colors
+    SnapCard(modifier = Modifier.fillMaxWidth(), color = c.hero, padding = 24.dp) {
+        Text("本月支出", color = c.onHero, style = SnapTheme.type.body)
+        Text(money(summary.spendingMinor, summary.currency), color = c.onHero, style = SnapTheme.type.heroNumber)
+        Text("结余 ${money(summary.netMinor, summary.currency)}", color = c.heroMute, style = SnapTheme.type.body)
     }
 }
 
@@ -100,11 +111,9 @@ private fun StatCard(
     value: String,
     modifier: Modifier = Modifier,
 ) {
-    Card(modifier = modifier) {
-        Column(Modifier.padding(12.dp)) {
-            Text(title, style = MaterialTheme.typography.labelLarge)
-            Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-        }
+    SnapCard(modifier = modifier, padding = 16.dp) {
+        Text(title, style = SnapTheme.type.caption, color = SnapTheme.colors.mute)
+        Text(value, style = SnapTheme.type.statNumber)
     }
 }
 
@@ -115,33 +124,38 @@ private fun CategoryBar(
     expanded: Boolean,
     onClick: () -> Unit,
 ) {
+    val c = SnapTheme.colors
     val max = summary.byCategory.maxOfOrNull { it.amountMinor }?.coerceAtLeast(1) ?: 1
     val share = if (summary.spendingMinor > 0) total.amountMinor * 100 / summary.spendingMinor else 0
-    Column(Modifier.clickable(onClick = onClick)) {
+    Column(Modifier.clickable(onClick = onClick).padding(vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("${if (expanded) "▾" else "▸"} ${total.name}", modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold)
-            Text("${money(total.amountMinor, summary.currency)}  ·  $share%  ·  ${total.count} 笔")
+            Text(
+                "${money(total.amountMinor, summary.currency)} · $share% · ${total.count} 笔",
+                color = c.mute,
+                style = SnapTheme.type.caption,
+            )
         }
         Box(
             Modifier
                 .fillMaxWidth()
                 .height(8.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
+                .clip(SnapShapes.pill)
+                .background(c.surfaceSoft),
         ) {
             Box(
                 Modifier
                     .fillMaxWidth((total.amountMinor.toFloat() / max).coerceIn(0f, 1f))
                     .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.primary),
+                    .clip(SnapShapes.pill)
+                    .background(c.accent),
             )
         }
         if (expanded) {
             total.children.forEach { child ->
-                Row(Modifier.padding(start = 24.dp, top = 4.dp)) {
-                    Text(child.name, modifier = Modifier.weight(1f))
-                    Text("${money(child.amountMinor, summary.currency)}  ·  ${child.count} 笔")
+                Row(Modifier.padding(start = 20.dp)) {
+                    Text(child.name, modifier = Modifier.weight(1f), color = c.body)
+                    Text("${money(child.amountMinor, summary.currency)} · ${child.count} 笔", color = c.mute, style = SnapTheme.type.caption)
                 }
             }
         }

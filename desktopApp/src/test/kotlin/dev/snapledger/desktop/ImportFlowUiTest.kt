@@ -37,6 +37,40 @@ class ImportFlowUiTest {
     }
 
     @Test
+    fun screenshotsLightTheme() = screenshotEveryScreen(dark = false)
+
+    @Test
+    fun screenshotsDarkTheme() = screenshotEveryScreen(dark = true)
+
+    /** Renders every screen with sample data, for checking the design by eye. */
+    private fun screenshotEveryScreen(dark: Boolean) {
+        run {
+            val store = JvmDatabase.open(null)
+            val theme = if (dark) "dark" else "light"
+            var tab = 0
+            rule.setContent {
+                App(store.repository, store.backup, DesktopFiles(), SqlLedgerRepository.DEFAULT_ACCOUNT_ID, "GBP", darkTheme = dark)
+            }
+            rule.onNodeWithText("导入").performClick()
+            paste(sample("example-3-special.json"))
+            screenshot("theme-$theme-${++tab}-preview")
+            rule.onNodeWithText("取消").performClick()
+            paste(sample("example-1-basic.json"))
+            rule.onNodeWithText("确认导入").performClick()
+            paste(sample("example-2-overlap.json"))
+            rule.onNodeWithText("确认导入").performClick()
+            rule.onNodeWithText("流水").performClick()
+            screenshot("theme-$theme-${++tab}-ledger")
+            rule.onNodeWithText("概览").performClick()
+            rule.onNodeWithText("‹ 上个月").performClick()
+            rule.waitForIdle()
+            screenshot("theme-$theme-${++tab}-overview")
+            rule.onNodeWithText("设置").performClick()
+            screenshot("theme-$theme-${++tab}-settings")
+        }
+    }
+
+    @Test
     fun pasteConfirmReimportAndBrowse() {
         val store = JvmDatabase.open(null)
         val repository = store.repository

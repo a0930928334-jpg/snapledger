@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -22,11 +23,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import dev.snapledger.core.ledger.BackupPort
 import dev.snapledger.core.ledger.BackupResult
+import dev.snapledger.ui.theme.SnapShapes
+import dev.snapledger.ui.theme.SnapTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -82,8 +84,8 @@ fun SettingsScreen(
         modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState()).widthIn(max = 640.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("设置", style = MaterialTheme.typography.headlineSmall)
-        Text("加密备份 · 两台设备之间同步", style = MaterialTheme.typography.titleMedium)
+        Text("设置", style = SnapTheme.type.pageTitle)
+        Text("加密备份 · 两台设备之间同步", style = SnapTheme.type.title)
         Text(
             "导出：把这台设备上的全部数据加密成一个 .slbackup 文件。导入：把另一台设备的备份合并进来，" +
                 "同一条记录以较新的修改为准，两边各自导入的同一批截图不会重复。" +
@@ -109,6 +111,8 @@ fun SettingsScreen(
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
             Button(
+                shape = SnapShapes.pill,
+                colors = ButtonDefaults.buttonColors(containerColor = SnapTheme.colors.cta, contentColor = SnapTheme.colors.onCta),
                 enabled = busy == null && password.length >= MIN_PASSWORD_LENGTH && confirm == password,
                 onClick = {
                     run("正在加密…") {
@@ -120,6 +124,7 @@ fun SettingsScreen(
                 },
             ) { Text("导出备份…") }
             OutlinedButton(
+                shape = SnapShapes.pill,
                 enabled = busy == null && password.length >= MIN_PASSWORD_LENGTH,
                 onClick = {
                     run("正在解密并合并…") {
@@ -145,11 +150,11 @@ fun SettingsScreen(
                 Text(it)
             }
         }
-        result?.let { (message, ok) -> Banner(message, if (ok) StatusColors.green else StatusColors.red) }
+        result?.let { (message, ok) -> Banner(message, if (ok) StatusColors.good else StatusColors.problem) }
         Text(
             "提示：备份文件可以通过 U 盘、数据线、网盘或邮件在电脑和手机之间传递。文件是加密的，但请不要和密码放在一起。",
             style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray,
+            color = SnapTheme.colors.mute,
         )
     }
 }

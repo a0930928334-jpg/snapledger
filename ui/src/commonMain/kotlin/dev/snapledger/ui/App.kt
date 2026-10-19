@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
@@ -17,8 +16,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,6 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.snapledger.core.ledger.BackupPort
 import dev.snapledger.core.ledger.LedgerRepository
+import dev.snapledger.ui.theme.SnapLedgerTheme
+import dev.snapledger.ui.theme.SnapTheme
 import kotlinx.coroutines.launch
 
 private enum class Tab(
@@ -52,8 +51,8 @@ fun App(
     currency: String,
     sharedText: String? = null,
     onSharedTextConsumed: () -> Unit = {},
+    darkTheme: Boolean = isSystemInDarkTheme(),
 ) {
-    val colors = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
     val ledger = remember(repository) { LedgerState(repository, accountId, currency) }
     val importState = remember(ledger) { ImportState(ledger) }
     var tab by remember { mutableStateOf(Tab.OVERVIEW) }
@@ -71,15 +70,16 @@ fun App(
         }
     }
 
-    MaterialTheme(colorScheme = colors) {
-        Surface(modifier = Modifier.fillMaxSize()) {
+    SnapLedgerTheme(darkTheme) {
+        Surface(modifier = Modifier.fillMaxSize(), color = SnapTheme.colors.canvas) {
             BoxWithConstraints {
                 val wide = maxWidth > 700.dp
                 Scaffold(
+                    containerColor = SnapTheme.colors.canvas,
                     snackbarHost = { SnackbarHost(snackbar) },
                     bottomBar = {
                         if (!wide) {
-                            NavigationBar {
+                            NavigationBar(containerColor = SnapTheme.colors.surface) {
                                 Tab.entries.forEach { item ->
                                     NavigationBarItem(
                                         selected = tab == item,
@@ -94,7 +94,7 @@ fun App(
                 ) { padding ->
                     Row(Modifier.padding(padding)) {
                         if (wide) {
-                            NavigationRail {
+                            NavigationRail(containerColor = SnapTheme.colors.surface) {
                                 Tab.entries.forEach { item ->
                                     NavigationRailItem(
                                         selected = tab == item,

@@ -40,5 +40,5 @@
 | 技术栈 | Kotlin Multiplatform + Compose Multiplatform，数据库用 SQLDelight（SQLite） |
 | 安全 | App 解锁（安卓指纹或 PIN，Windows 可选 PIN）；备份文件用密码加密；MVP 的安卓 App 不申请联网权限 |
 | 截图隐私 | 不遮挡；截图时避开账户信息区域；关闭 AI 的训练数据选项；提示词要求 AI 不复述账号 |
-| 界面 | 中英双语，跟随系统语言；深色模式跟随系统；首页是"本月概览"，风格参考 Monzo |
+| 界面 | 中英双语，跟随系统语言；深色模式跟随系统；首页是"本月概览"；视觉规范见仓库根目录的 `DESIGN.md`：Wise 结构加靛蓝色（ADR-013） |
 | 工程 | 一个仓库放所有代码（monorepo）、GitHub Actions、ADR、gitleaks 密钥扫描、MIT 协议；示例数据全部虚构 |

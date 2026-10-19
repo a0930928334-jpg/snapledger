@@ -19,6 +19,6 @@
 4. 金额一律用**整数最小单位**（`Long`）加币种表示，不允许用 `Double` 或 `Float` 表示金额。
 5. `core` 模块必须是纯 Kotlin，不依赖 UI、数据库或任何平台 API。
 6. MVP 的安卓 App 不申请 `INTERNET` 权限。
-7. 修改了设计，就要同步更新 `docs/`，重要的决策写成 ADR，放在 `docs/adr/`。修改导入格式时，Schema、提示词（`docs/04-ai-prompt.md`）、示例和测试四处都要同步改。
+7. 界面改动遵守仓库根目录的 `DESIGN.md`（实现在 `ui/.../theme/Theme.kt`，两者同步修改）。修改了设计，就要同步更新 `docs/`，重要的决策写成 ADR，放在 `docs/adr/`。修改导入格式时，Schema、提示词（`docs/04-ai-prompt.md`）、示例和测试四处都要同步改。
 8. 按 `docs/06-milestones.md` 的里程碑顺序推进。每个里程碑的完成标准要**逐条验证**，再向用户汇报，等用户确认后才进入下一个。
 9. 推送代码、在 GitHub 上建仓库、发布 Release 这类对外操作，每次都要先问用户。

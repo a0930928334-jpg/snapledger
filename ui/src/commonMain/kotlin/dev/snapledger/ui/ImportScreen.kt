@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,6 +47,8 @@ import dev.snapledger.core.importer.RowStatus
 import dev.snapledger.core.model.Direction
 import dev.snapledger.core.model.Money
 import dev.snapledger.core.model.TxnType
+import dev.snapledger.ui.theme.SnapShapes
+import dev.snapledger.ui.theme.SnapTheme
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
@@ -142,35 +145,41 @@ private fun InputPane(
 ) {
     @Suppress("DEPRECATION")
     val clipboard = LocalClipboardManager.current
-    LazyColumn(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    LazyColumn(
+        modifier = Modifier.padding(horizontal = 16.dp).widthIn(max = 900.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
         item {
-            Text("导入流水", style = MaterialTheme.typography.headlineSmall)
+            Text("导入流水", style = SnapTheme.type.pageTitle, modifier = Modifier.padding(top = 16.dp))
             Text(
                 "把 ChatGPT 或 Claude 返回的 JSON 粘贴到下面（可以连同代码块标记和前后的说明文字一起粘贴）。",
-                style = MaterialTheme.typography.bodyMedium,
+                style = SnapTheme.type.body,
+                color = SnapTheme.colors.mute,
             )
         }
-        state.message?.let { message -> item { Banner(message, StatusColors.green) } }
+        state.message?.let { message -> item { Banner(message, StatusColors.good) } }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = {
+                CtaButton("从剪贴板导入", onClick = {
                     state.text = clipboard.getText()?.text.orEmpty()
                     state.analyse()
-                }) { Text("从剪贴板导入") }
-                OutlinedButton(onClick = state::analyse, enabled = state.text.isNotBlank()) { Text("解析粘贴的内容") }
+                })
+                SecondaryButton("解析粘贴的内容", onClick = state::analyse, enabled = state.text.isNotBlank())
             }
         }
         item {
-            OutlinedTextField(
-                value = state.text,
-                onValueChange = { state.text = it },
-                modifier = Modifier.fillMaxWidth().heightIn(min = 160.dp, max = 320.dp),
-                label = { Text("JSON") },
-            )
+            SnapCard {
+                OutlinedTextField(
+                    value = state.text,
+                    onValueChange = { state.text = it },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 160.dp, max = 320.dp),
+                    label = { Text("JSON") },
+                )
+            }
         }
         if (state.issues.isNotEmpty()) {
             item { Text("无法导入，请修正后重试：", color = StatusColors.bad, fontWeight = FontWeight.Bold) }
-            items(state.issues) { issue -> Banner("${issue.path}：${issue.message}", StatusColors.red) }
+            items(state.issues) { issue -> Banner("${issue.path}：${issue.message}", StatusColors.problem) }
         }
         item { HistorySection(ledger) }
     }
@@ -181,16 +190,16 @@ private fun HistorySection(ledger: LedgerState) {
     // Keyed on the snapshot so the list refreshes after every import or undo.
     val batches = remember(ledger.snapshot) { ledger.repository.importBatches(ledger.accountId) }
     if (batches.isEmpty()) return
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Spacer(Modifier.padding(4.dp))
-        Text("导入历史", style = MaterialTheme.typography.titleMedium)
+    SnapCard {
+        Text("导入历史", style = SnapTheme.type.title)
         batches.take(20).forEach { batch ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     "${formatMillis(batch.importedAtMillis)} · ${batch.extractedBy} · 新增 ${batch.addedCount} 条，跳过 ${batch.skippedCount} 条" +
                         if (batch.undone) "（已撤销）" else "",
                     modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = SnapTheme.type.caption,
+                    color = if (batch.undone) SnapTheme.colors.mute else SnapTheme.colors.body,
                 )
                 if (!batch.undone) {
                     TextButton(onClick = {
@@ -211,36 +220,40 @@ private fun PreviewPane(
     evaluation: PreviewEvaluation,
 ) {
     val likelyByRow = evaluation.days.mapNotNull { day -> day.likelyAmount?.let { it.rowId to (it to day.currency) } }.toMap()
-    LazyColumn(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    LazyColumn(
+        modifier = Modifier.padding(horizontal = 16.dp).widthIn(max = 900.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         item {
-            Text("导入预览", style = MaterialTheme.typography.headlineSmall)
+            Text("导入预览", style = SnapTheme.type.pageTitle, modifier = Modifier.padding(top = 16.dp))
             Text(
                 "新增 ${evaluation.newCount} 条 · 跳过 ${evaluation.skippedCount} 条 · 疑似重复 ${evaluation.suspectCount} 条" +
                     if (evaluation.blockingCount > 0) " · 待补全 ${evaluation.blockingCount} 条" else "",
-                style = MaterialTheme.typography.titleMedium,
+                style = SnapTheme.type.title,
+                color = SnapTheme.colors.body,
             )
         }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Button(onClick = state::commit, enabled = evaluation.canCommit) { Text("确认导入") }
-                OutlinedButton(onClick = state::cancel) { Text("取消") }
+                CtaButton("确认导入", onClick = state::commit, enabled = evaluation.canCommit)
+                SecondaryButton("取消", onClick = state::cancel)
                 if (!evaluation.canCommit && evaluation.blockingCount > 0) {
                     Text("有 ${evaluation.blockingCount} 条缺少必填信息：补全，或者取消勾选", color = StatusColors.bad)
                 }
             }
         }
-        items(preview.notices) { Banner(it, StatusColors.yellow) }
+        items(preview.notices) { Banner(it, StatusColors.caution) }
         if (preview.aiWarnings.isNotEmpty()) {
-            item { Text("AI 的说明", style = MaterialTheme.typography.titleSmall) }
-            items(preview.aiWarnings) { Banner(it, StatusColors.gray) }
+            item { Text("AI 的说明", style = SnapTheme.type.title) }
+            items(preview.aiWarnings) { Banner(it, StatusColors.neutral) }
         }
         if (evaluation.days.isNotEmpty()) {
-            item { Text("日终余额对账", style = MaterialTheme.typography.titleMedium) }
+            item { Text("日终余额对账", style = SnapTheme.type.title) }
             items(evaluation.days) { day -> ReconciliationLine(day, evaluation) }
         }
         item {
             HorizontalDivider()
-            Text("交易（勾选的会被导入）", style = MaterialTheme.typography.titleMedium)
+            Text("交易（勾选的会被导入）", style = SnapTheme.type.title)
         }
         items(evaluation.rows, key = { it.row.id }) { row ->
             val likely = likelyByRow[row.row.id]
@@ -277,9 +290,9 @@ private fun ReconciliationLine(
         }
     val color =
         when (day.status) {
-            ReconStatus.OK -> StatusColors.green
-            ReconStatus.MISMATCH -> StatusColors.red
-            ReconStatus.UNVERIFIABLE -> StatusColors.gray
+            ReconStatus.OK -> StatusColors.good
+            ReconStatus.MISMATCH -> StatusColors.problem
+            ReconStatus.UNVERIFIABLE -> StatusColors.neutral
         }
     Banner(text, color)
 }
@@ -295,16 +308,16 @@ private fun PreviewRowCard(
     val row = evaluation.row
     val background =
         when {
-            !evaluation.include -> StatusColors.gray
-            evaluation.status == RowStatus.INCOMPLETE -> StatusColors.red
-            evaluation.status == RowStatus.SUSPECTED_DUPLICATE || row.uncertainFields.isNotEmpty() -> StatusColors.yellow
-            else -> StatusColors.green
+            !evaluation.include -> StatusColors.neutral
+            evaluation.status == RowStatus.INCOMPLETE -> StatusColors.problem
+            evaluation.status == RowStatus.SUSPECTED_DUPLICATE || row.uncertainFields.isNotEmpty() -> StatusColors.caution
+            else -> StatusColors.newRow
         }
     Column(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp))
+                .clip(SnapShapes.lg)
                 .background(background)
                 .padding(horizontal = 8.dp, vertical = 4.dp),
     ) {
@@ -418,9 +431,9 @@ fun Banner(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(6.dp))
+                .clip(SnapShapes.md)
                 .background(color)
-                .padding(8.dp),
+                .padding(horizontal = 12.dp, vertical = 10.dp),
         style = MaterialTheme.typography.bodyMedium,
     )
 }
