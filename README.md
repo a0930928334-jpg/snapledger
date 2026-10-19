@@ -32,6 +32,15 @@ Requirements: JDK 21, Android SDK with platform 37.
 ./gradlew :androidApp:installDebug    # install on a connected device / emulator
 ```
 
+### Windows executable
+
+```bash
+./gradlew :desktopApp:packageExe          # installer: desktopApp/build/compose/binaries/main/exe/SnapLedger-<version>.exe
+./gradlew :desktopApp:createDistributable # portable folder: desktopApp/build/compose/binaries/main/app/SnapLedger/SnapLedger.exe
+```
+
+Both bundle their own Java runtime, so nothing else needs to be installed. `packageMsi` builds an `.msi` instead.
+
 The desktop app keeps its database in `%APPDATA%\SnapLedger\snapledger.db`. To try it with the fictional samples without touching your real data, point it at a throwaway file:
 
 ```bash

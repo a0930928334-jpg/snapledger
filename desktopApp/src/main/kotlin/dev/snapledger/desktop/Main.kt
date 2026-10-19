@@ -18,6 +18,7 @@ fun main() {
         Window(
             onCloseRequest = ::exitApplication,
             title = "SnapLedger",
+            icon = AppIcon,
             state = rememberWindowState(width = 1200.dp, height = 820.dp),
         ) {
             App(store.repository, store.backup, files, SqlLedgerRepository.DEFAULT_ACCOUNT_ID, SqlLedgerRepository.DEFAULT_CURRENCY)

@@ -13,7 +13,7 @@ style:
     active: false
   MagicNumber:
     # Colours and dp values in UI code are self-describing.
-    excludes: ['**/ui/src/**', '**/test/**', '**/jvmTest/**', '**/commonTest/**']
+    excludes: ['**/ui/src/**', '**/desktopApp/src/main/**', '**/test/**', '**/jvmTest/**', '**/commonTest/**']
     # Decimal base, thousands grouping, months in a year.
     ignoreNumbers: ['-1', '0', '1', '2', '3', '4', '10', '12']
   ReturnCount:
