@@ -3,8 +3,34 @@ naming:
   FunctionNaming:
     # Composable functions are PascalCase by convention.
     ignoreAnnotated: ['Composable']
+  MatchingDeclarationName:
+    # Compose screens keep their state holder next to the composables in one file.
+    active: false
 
 style:
   # Formatting is ktlint's job.
   MaxLineLength:
     active: false
+  MagicNumber:
+    # Colours and dp values in UI code are self-describing.
+    excludes: ['**/ui/src/**', '**/test/**', '**/jvmTest/**', '**/commonTest/**']
+    # Decimal base, thousands grouping, months in a year.
+    ignoreNumbers: ['-1', '0', '1', '2', '3', '4', '10', '12']
+  ReturnCount:
+    # Early returns ("guard clauses") keep validation code flat.
+    max: 8
+  LoopWithTooManyJumpStatements:
+    active: false
+
+complexity:
+  LongParameterList:
+    functionThreshold: 8
+    constructorThreshold: 18
+  TooManyFunctions:
+    thresholdInClasses: 15
+    thresholdInObjects: 15
+    thresholdInFiles: 20
+  CyclomaticComplexMethod:
+    ignoreSimpleWhenEntries: true
+  LongMethod:
+    excludes: ['**/jvmTest/**', '**/commonTest/**']

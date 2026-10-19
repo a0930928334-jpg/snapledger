@@ -134,7 +134,8 @@ flowchart LR
 ### 4.1 指纹
 
 ```
-normalize(s) = s 转大写 → 去掉字母、数字、空格以外的字符 → 连续空格合并为一个 → 去掉首尾空格
+normalize(s) = s 转大写 → 字母、数字以外的字符都换成空格 → 连续空格合并为一个 → 去掉首尾空格
+               （换成空格而不是删掉："MARKS&SPENCER" → "MARKS SPENCER"，才能和内置关键词按整词匹配）
 fingerprint  = (账户, 日期, 方向, 金额最小单位, 币种, normalize(原始描述))
 ```
 

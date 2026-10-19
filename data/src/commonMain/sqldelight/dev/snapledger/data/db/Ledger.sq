@@ -1,0 +1,154 @@
+-- Every table carries id (UUID text), updated_at (epoch millis) and deleted_at (soft delete) for future sync.
+
+CREATE TABLE account (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    institution TEXT,
+    currency TEXT NOT NULL,
+    type TEXT NOT NULL,
+    updated_at INTEGER NOT NULL,
+    deleted_at INTEGER
+);
+
+CREATE TABLE txn (
+    id TEXT NOT NULL PRIMARY KEY,
+    account_id TEXT NOT NULL REFERENCES account(id),
+    date TEXT NOT NULL,
+    direction TEXT NOT NULL,
+    amount_minor INTEGER NOT NULL,
+    currency TEXT NOT NULL,
+    type TEXT NOT NULL,
+    category_code TEXT,
+    classification_source TEXT NOT NULL,
+    merchant TEXT,
+    counterparty_type TEXT NOT NULL,
+    raw_description TEXT NOT NULL,
+    fingerprint TEXT NOT NULL,
+    note TEXT,
+    origin TEXT NOT NULL,
+    import_batch_id TEXT,
+    updated_at INTEGER NOT NULL,
+    deleted_at INTEGER
+);
+
+CREATE INDEX txn_dedup ON txn(account_id, date, fingerprint);
+
+CREATE TABLE daily_balance (
+    id TEXT NOT NULL PRIMARY KEY,
+    account_id TEXT NOT NULL REFERENCES account(id),
+    date TEXT NOT NULL,
+    balance_minor INTEGER NOT NULL,
+    currency TEXT NOT NULL,
+    import_batch_id TEXT,
+    -- One level of history so undoing an import can restore the balance it overwrote.
+    previous_balance_minor INTEGER,
+    previous_batch_id TEXT,
+    updated_at INTEGER NOT NULL,
+    deleted_at INTEGER,
+    UNIQUE (account_id, date)
+);
+
+CREATE TABLE user_rule (
+    id TEXT NOT NULL PRIMARY KEY,
+    pattern TEXT NOT NULL UNIQUE,
+    category_code TEXT NOT NULL,
+    updated_at INTEGER NOT NULL,
+    deleted_at INTEGER
+);
+
+CREATE TABLE import_batch (
+    id TEXT NOT NULL PRIMARY KEY,
+    account_id TEXT NOT NULL,
+    imported_at INTEGER NOT NULL,
+    extracted_by TEXT NOT NULL,
+    added_count INTEGER NOT NULL,
+    skipped_count INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    deleted_at INTEGER
+);
+
+-- account ------------------------------------------------------------------
+
+accountById:
+SELECT * FROM account WHERE id = ?;
+
+insertAccount:
+INSERT INTO account(id, name, institution, currency, type, updated_at, deleted_at)
+VALUES (?, ?, ?, ?, ?, ?, NULL);
+
+-- txn ----------------------------------------------------------------------
+
+activeTransactions:
+SELECT * FROM txn WHERE account_id = ? AND deleted_at IS NULL ORDER BY date DESC, rowid ASC;
+
+insertTransaction:
+INSERT INTO txn(
+    id, account_id, date, direction, amount_minor, currency, type, category_code, classification_source,
+    merchant, counterparty_type, raw_description, fingerprint, note, origin, import_batch_id, updated_at, deleted_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL);
+
+updateTransactionCategory:
+UPDATE txn SET category_code = ?, classification_source = ?, updated_at = ? WHERE id = ?;
+
+softDeleteTransaction:
+UPDATE txn SET deleted_at = :now, updated_at = :now WHERE id = :id;
+
+softDeleteBatchTransactions:
+UPDATE txn SET deleted_at = :now, updated_at = :now WHERE import_batch_id = :batchId AND deleted_at IS NULL;
+
+-- daily_balance ------------------------------------------------------------
+
+activeBalances:
+SELECT * FROM daily_balance WHERE account_id = ? AND deleted_at IS NULL ORDER BY date DESC;
+
+balanceForDate:
+SELECT * FROM daily_balance WHERE account_id = ? AND date = ?;
+
+insertBalance:
+INSERT INTO daily_balance(id, account_id, date, balance_minor, currency, import_batch_id, previous_balance_minor, previous_batch_id, updated_at, deleted_at)
+VALUES (?, ?, ?, ?, ?, ?, NULL, NULL, ?, NULL);
+
+replaceBalance:
+UPDATE daily_balance
+SET balance_minor = :balance, currency = :currency, import_batch_id = :batchId,
+    previous_balance_minor = :previousBalance, previous_batch_id = :previousBatchId,
+    updated_at = :now, deleted_at = NULL
+WHERE id = :id;
+
+balancesOfBatch:
+SELECT * FROM daily_balance WHERE import_batch_id = ? AND deleted_at IS NULL;
+
+restorePreviousBalance:
+UPDATE daily_balance
+SET balance_minor = previous_balance_minor, import_batch_id = previous_batch_id,
+    previous_balance_minor = NULL, previous_batch_id = NULL, updated_at = :now
+WHERE id = :id;
+
+softDeleteBalance:
+UPDATE daily_balance SET deleted_at = :now, updated_at = :now WHERE id = :id;
+
+-- user_rule ----------------------------------------------------------------
+
+activeRules:
+SELECT * FROM user_rule WHERE deleted_at IS NULL;
+
+ruleByPattern:
+SELECT * FROM user_rule WHERE pattern = ?;
+
+insertRule:
+INSERT INTO user_rule(id, pattern, category_code, updated_at, deleted_at) VALUES (?, ?, ?, ?, NULL);
+
+updateRule:
+UPDATE user_rule SET category_code = ?, updated_at = ?, deleted_at = NULL WHERE pattern = ?;
+
+-- import_batch -------------------------------------------------------------
+
+insertBatch:
+INSERT INTO import_batch(id, account_id, imported_at, extracted_by, added_count, skipped_count, updated_at, deleted_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, NULL);
+
+batches:
+SELECT * FROM import_batch WHERE account_id = ? ORDER BY imported_at DESC;
+
+markBatchUndone:
+UPDATE import_batch SET deleted_at = :now, updated_at = :now WHERE id = :id;

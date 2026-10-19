@@ -54,6 +54,7 @@ kotlin {
 
 dependencies {
     implementation(projects.ui)
+    implementation(projects.data)
     implementation(libs.androidx.activity.compose)
     implementation(libs.compose.runtime)
 }

@@ -13,8 +13,24 @@ kotlin {
 
 dependencies {
     implementation(projects.ui)
+    implementation(projects.data)
     implementation(compose.desktop.currentOs)
     implementation(libs.kotlinx.coroutines.swing)
+
+    testImplementation(libs.compose.ui.test.junit4)
+    testImplementation(libs.junit4)
+    testImplementation(kotlin("test"))
+}
+
+tasks.withType<Test>().configureEach {
+    systemProperty("snapledger.samplesDir", rootProject.file("samples").absolutePath)
+    systemProperty(
+        "snapledger.screenshotDir",
+        layout.buildDirectory
+            .dir("screenshots")
+            .get()
+            .asFile.absolutePath,
+    )
 }
 
 compose.desktop {

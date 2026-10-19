@@ -2,7 +2,7 @@
 
 A local-first personal finance app for Android and Windows. Bank-statement screenshots are turned into structured JSON by a general-purpose AI (ChatGPT or Claude); SnapLedger then validates, aligns overlapping screenshots, deduplicates, reconciles against end-of-day balances, auto-categorises and reports.
 
-> Status: early development (milestone M0: project skeleton). Not usable yet.
+> Status: phase A of the fast track — a minimal but working Windows version (import, preview, ledger, monthly overview).
 
 ## Principles
 
@@ -31,6 +31,16 @@ Requirements: JDK 21, Android SDK with platform 37.
 ./gradlew :desktopApp:run             # run the desktop app
 ./gradlew :androidApp:installDebug    # install on a connected device / emulator
 ```
+
+The desktop app keeps its database in `%APPDATA%\SnapLedger\snapledger.db`. To try it with the fictional samples without touching your real data, point it at a throwaway file:
+
+```bash
+SNAPLEDGER_DB=/tmp/demo.db ./gradlew :desktopApp:run
+```
+
+Then open **导入** (Import), paste the contents of `samples/example-1-basic.json`, and confirm.
+
+If Gradle fails on Windows with `Unable to establish loopback connection`, your `TEMP` path is probably an 8.3 short name (such as `C:\Users\ADMINI~1\...`). Set `TEMP` and `TMP` to a plain short path such as `C:\tmp`, then run `./gradlew --stop` once.
 
 Enable the secret-scanning pre-commit hook once per clone (requires [gitleaks](https://github.com/gitleaks/gitleaks)):
 
