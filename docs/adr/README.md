@@ -7,9 +7,10 @@
 | [001](001-kotlin-multiplatform.md) | 用 Kotlin Multiplatform + Compose Multiplatform | 已采纳 |
 | [002](002-local-first-offline.md) | 本地优先，MVP 不联网 | 已采纳 |
 | [003](003-ai-extraction-outside-app.md) | AI 识别放在 App 外，App 只认导入格式 v1 | 已采纳 |
-| [011](011-pdf-statement-local-parsing.md) | PDF 对账单在本地确定性解析，作为每月的权威校准（v1.1） | 已采纳 |
+| [011](011-pdf-statement-local-parsing.md) | PDF 对账单在本地确定性解析，作为每月的权威校准（v1.1） | 已采纳（第 5 条被 014 取代） |
 | [012](012-backup-format-and-merge.md) | 加密备份的文件格式和合并规则 | 已采纳 |
 | [013](013-visual-design.md) | 界面设计规范（DESIGN.md，Wise 结构 + 靛蓝） | 已采纳 |
+| [014](014-pdf-statement-via-ai.md) | 允许把 PDF 对账单发给 AI，输出导入格式 v1 | 已采纳 |
 
 004–010 已在 [02 第 8 节](../02-architecture.md) 列出，按里程碑写出（M1 写 004–007）。
 

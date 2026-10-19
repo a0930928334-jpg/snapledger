@@ -76,6 +76,17 @@ class ImportPipelineTest {
     }
 
     @Test
+    fun pdfStatementReconcilesFromTheOpeningBalance() {
+        val preview = pipeline.prepareOrFail(sample("example-4-statement.json"))
+        val evaluation = pipeline.evaluate(preview, LedgerSnapshot.EMPTY)
+
+        assertEquals(3, evaluation.newCount)
+        assertEquals(ReconStatus.OK, evaluation.days.single { it.date == LocalDate(2026, 8, 5) }.status)
+        assertEquals(ReconStatus.OK, evaluation.days.single { it.date == LocalDate(2026, 8, 6) }.status)
+        assertTrue(evaluation.canCommit)
+    }
+
+    @Test
     fun personalTransfersAndRefundsAreClassified() {
         val preview1 = pipeline.prepareOrFail(sample("example-1-basic.json"))
         val alex = preview1.rows.single { it.rawDescription.startsWith("Alex Chen") }

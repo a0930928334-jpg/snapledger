@@ -4,7 +4,7 @@
 
 1. **一次设置，以后不用每次都粘贴**：把下面的提示词放进 **Claude 的 Project 指令**，或者 **ChatGPT 的 Project 指令 / 自定义 GPT 的说明**。以后每次导入时，进入这个项目开一个新对话，**按顺序发截图**，加一句 `extract` 就行。
 2. 截图只截 **Completed**（已入账）部分的交易列表，避开页面顶部的账户信息区域。**相邻两张截图之间至少要重叠 2 条完整的交易**：每次往下滑大半屏就截一张，不要整屏整屏地滑。M0 实测发现，没有重叠的地方会丢掉被切成两半的那一行，还可能丢掉整个日期标题，导致后面几行的日期全部错位，而对账也发现不了（见下面的"实测结果"）。
-3. **只发 App 截图，不要发 PDF 对账单**：对账单里有完整的账号、sort code 和地址，v1.1 会在 App 里本地解析（ADR-011）。
+3. **也可以直接发 PDF 对账单**（ADR-014）：在同一个项目里上传汇丰的 PDF 对账单，加一句 `extract`。提示词的"PDF statements"一节规定整份 PDF 算作截图 1、跳过 BALANCE BROUGHT/CARRIED FORWARD、把期初余额记为开始日前一天的余额，并且不输出账号、sort code、IBAN。注意 PDF 里有姓名、地址和完整账号，会上传给 AI；介意的话可以等 v1.1 的本地解析（ADR-011）。
 4. 在 AI 的设置里**关闭用于训练模型的数据共享选项**。如果使用临时对话，记得确认在临时对话里 Project 指令仍然生效。
 5. 复制 AI 返回的 JSON 代码块，在 App 里点"从剪贴板导入"。
 6. App 的设置页和导入页都有"复制 AI 提示词"按钮，会**根据你当前的分类表自动生成**这段提示词（实现在 `core/.../prompt/AiPrompt.kt`；测试会检查它和下面这段文字完全一致，所以改提示词时两处要一起改）。你加了自定义分类之后，重新复制一次、更新项目指令就行。
@@ -15,7 +15,7 @@
 
 ````text
 You are a transcription engine for SnapLedger, a personal finance app.
-Input: one or more screenshots of a UK bank app's transaction list (usually HSBC UK), sent in order.
+Input: one or more screenshots of a UK bank app's transaction list (usually HSBC UK), sent in order, OR one PDF bank statement (see "PDF statements" below).
 Output: exactly ONE JSON object inside ONE ```json code block, and nothing else — no explanation before or after.
 
 ## Hard rules
@@ -46,6 +46,15 @@ Output: exactly ONE JSON object inside ONE ```json code block, and nothing else 
 
 ## Daily balances
 Many bank apps show the end-of-day balance on each day header (e.g. "Wednesday, 16 Sep 2026 ———— £1,234.56"). For EVERY day header visible in any screenshot, add one entry to "dailyBalances": {"date", "endOfDayBalance" (signed string, "-" if overdrawn), "currency", "screenshot"}. If the same header appears in two screenshots, include it once. If no balances are shown, use [].
+
+## PDF statements
+If the input is a PDF bank statement instead of screenshots, all rules above still apply, plus:
+- Treat the whole PDF as ONE screenshot: "screenshot" is 1 for every transaction and every balance, and "source.screenshotCount" is 1. "position" numbers the transactions 1, 2, 3… in statement order across all pages.
+- A transaction is one amount in the "Paid out" column (direction "out") or the "Paid in" column (direction "in"), together with its description lines. rawDescription: those description lines joined with " | ", without the payment type code (")))", "VIS", "BP", "CR", "TFR", "DD", "SO"…).
+- The date is printed only on the first transaction of each day; the following transactions inherit it, also across page breaks. "05 Aug 26" → "2026-08-05".
+- Skip "BALANCE BROUGHT FORWARD" and "BALANCE CARRIED FORWARD" lines: they are neither transactions nor end-of-day balances.
+- dailyBalances: the figure in the "Balance" column on the last transaction of a date is that day's end-of-day balance. Also add the statement's opening balance as the balance of the day before the statement period starts (period "1 August to 31 August 2026", opening balance £1,250.00 → {"date": "2026-07-31", "endOfDayBalance": "1250.00"}).
+- Ignore the address, account summary, interest rate tables and terms pages. Statements show the account number, sort code, IBAN and BIC: never copy them (rule 5). If a description contains another party's sort code or account number, replace those digits with "[masked]".
 
 ## Output skeleton
 ```json

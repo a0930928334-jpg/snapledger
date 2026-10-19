@@ -21,9 +21,10 @@
 | 阶段 B：安卓 + 同步 | ✓ 安卓版、分享菜单收文本、加密备份导出导入合并（ADR-012），模拟器上双向验证过 |
 | 界面设计 | ✓ `DESIGN.md`（Wise 结构 + 靛蓝，浅色和深色），实现在 `ui/.../theme/Theme.kt`（ADR-013） |
 | 内置 AI 提示词 | ✓ 设置页和导入页可以一键复制（IMP-12），`AiPromptTest` 保证它和 `docs/04` 一字不差 |
-| 打包 | ✓ Windows exe/msi 安装包 + 免安装版；安卓 debug APK。当前版本 0.4.0 |
+| PDF 对账单走 AI | ✓ 同一份提示词也接受 PDF 对账单（ADR-014），样例 `example-4-statement.json` |
+| 打包 | ✓ Windows exe/msi 安装包 + 免安装版；安卓 debug APK。当前版本 0.5.0 |
 
-用户手上：桌面上有 `SnapLedger-0.4.0-安装包.exe` 和 `SnapLedger.apk`。**安装时不能选 D 盘**（Windows Installer 在 D 盘建 `Config.Msi` 会报错 5），用默认位置。
+用户手上：桌面上有 `SnapLedger-0.5.0-安装包.exe` 和 `SnapLedger-0.5.0.apk`。**安装时不能选 D 盘**（Windows Installer 在 D 盘建 `Config.Msi` 会报错 5），用默认位置。
 
 ## 3. 下一步候选（等用户选，推荐顺序）
 
@@ -54,7 +55,7 @@
 - `data`：SQLDelight 的 `Ledger.sq`、`SqlLedgerRepository`、`backup/`（加密在 `jvmShared` 源码集里）。
 - `ui`：`App.kt`（导航）、四个页面、`theme/Theme.kt`、`Components.kt`、`PromptCard.kt`。
 - `desktopApp` / `androidApp`：入口、文件选择、分享菜单。
-- 测试：core 24 个、data 10 个（含加密已知答案测试，期望值由 Node.js 生成）、desktop UI 3 个。
+- 测试：core 25 个、data 10 个（含加密已知答案测试，期望值由 Node.js 生成）、desktop UI 3 个。
 
 ## 6. 真实数据（硬性规则，见 CLAUDE.md 第 1 条）
 

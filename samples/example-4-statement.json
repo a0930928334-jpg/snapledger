@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "source": { "extractedBy": "chatgpt", "institution": "HSBC UK", "screenshotCount": 1 },
+  "transactions": [
+    {
+      "screenshot": 1, "position": 1, "date": "2026-08-05", "direction": "out",
+      "amount": "12.40", "currency": "GBP",
+      "rawDescription": "GOLDEN LANTERN | LEEDS", "merchant": "Golden Lantern",
+      "counterpartyType": "merchant", "suggestedType": "expense",
+      "suggestedCategory": "dining.restaurant", "status": "posted",
+      "uncertainFields": [], "note": null
+    },
+    {
+      "screenshot": 1, "position": 2, "date": "2026-08-05", "direction": "out",
+      "amount": "100.00", "currency": "GBP",
+      "rawDescription": "[masked] | INTERNET TRANSFER", "merchant": null,
+      "counterpartyType": "unknown", "suggestedType": "transfer",
+      "suggestedCategory": null, "status": "posted",
+      "uncertainFields": ["suggestedType"],
+      "note": "TFR row; the other party's sort code and account number were masked."
+    },
+    {
+      "screenshot": 1, "position": 3, "date": "2026-08-06", "direction": "in",
+      "amount": "40.00", "currency": "GBP",
+      "rawDescription": "Jamie Li | train tickets", "merchant": "Jamie Li",
+      "counterpartyType": "person", "suggestedType": "income",
+      "suggestedCategory": "income.personal", "status": "posted",
+      "uncertainFields": [], "note": null
+    }
+  ],
+  "dailyBalances": [
+    { "date": "2026-07-31", "endOfDayBalance": "1250.00", "currency": "GBP", "screenshot": 1 },
+    { "date": "2026-08-05", "endOfDayBalance": "1137.60", "currency": "GBP", "screenshot": 1 },
+    { "date": "2026-08-06", "endOfDayBalance": "1177.60", "currency": "GBP", "screenshot": 1 }
+  ],
+  "warnings": []
+}
