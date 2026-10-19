@@ -1,45 +1,61 @@
-# 交接：从需求阶段进入开发阶段
+# 交接：给下一个会话（2026-10-19 更新）
 
-> 写给接手的新 Claude 会话。2026-10-18 用户已确认需求（"需求确认，可以开始"）。
-> `CLAUDE.md` 会自动加载，里面的规则始终有效。这份文件只说明**接下来做什么**，以及**文档里没有、但需要知道的背景**。
+> 写给接手的新 Claude 会话。`CLAUDE.md` 会自动加载，里面的规则始终有效。这份文件说明**现在做到哪了、怎么构建、下一步做什么**。
+> 用户的每周用量比较紧：**回答要简短**，先读这份文件，不要把 `docs/` 全部重读一遍，需要哪份再读哪份。
 
-## 1. 先读（按顺序）
+## 1. 用户偏好（重要）
 
-1. `docs/README.md`：已确认决策的汇总
-2. `docs/01-requirements.md`：功能清单（MVP 和后续版本）
-3. `docs/02-architecture.md`：技术栈、模块划分、**导入流水线和去重、对账、分类算法**
-4. `docs/03-data-format.md`，以及 `schemas/import-v1.schema.json`、`samples/*.json`
-5. `docs/05-categories-and-rules.md`
-6. `docs/06-milestones.md`：重点读 M0 和 M1
-7. `docs/04-ai-prompt.md`：截图识别提示词。M0 的实测要用到
+- 全程中文，简短直接；给明确推荐，不要列一长串选项。
+- 用户已授权：可以直接提交并推送到 GitHub（`a0930928334-jpg/snapledger`），不用每次都问。
+- **提交信息里不要加任何 Claude 署名**（不要 `Co-Authored-By`、不要 "Generated with Claude Code"）。作者用本机 git 配置。
+- 目标是"尽快用上"：已经从 M0–M6 改成快速路线，见 `docs/06-milestones.md` 开头的"快速路线"。
+- 每个阶段做完后逐条验证，汇报，等用户确认再继续（CLAUDE.md 第 8 条）。
 
-## 2. 当前任务：M0（仓库骨架与提示词验证）
+## 2. 当前进度
 
-范围和完成标准以 `docs/06-milestones.md` 中的 M0 为准。动手前：
+| 阶段 | 状态 |
+|---|---|
+| M0 仓库骨架 | ✓ CI、gitleaks（pre-commit 和 CI 都有）、ADR-001～003 |
+| M0 提示词实测 | **未完成**：Claude 第 1 轮 ≈87%（错误全出在截图之间没有重叠），提示词已改进（见 `docs/04` 末尾"实测结果"）。等用户按新规则重新截图，在 Claude 和 ChatGPT 上各跑一遍 |
+| 阶段 A：Windows 可用 | ✓ 导入、预览（去重、疑似重复、对账、分类）、流水、本月概览、导入历史和撤销 |
+| 阶段 B：安卓 + 同步 | ✓ 安卓版、分享菜单收文本、加密备份导出导入合并（ADR-012），模拟器上双向验证过 |
+| 界面设计 | ✓ `DESIGN.md`（Wise 结构 + 靛蓝，浅色和深色），实现在 `ui/.../theme/Theme.kt`（ADR-013） |
+| 内置 AI 提示词 | ✓ 设置页和导入页可以一键复制（IMP-12），`AiPromptTest` 保证它和 `docs/04` 一字不差 |
+| 打包 | ✓ Windows exe/msi 安装包 + 免安装版；安卓 debug APK。当前版本 0.4.0 |
 
-1. **先列出 M0 的执行计划**，给用户确认后再开始。
-2. **查证当前的稳定版本**：Kotlin、Compose Multiplatform、SQLDelight、AGP、Gradle、Koin、kotlinx 系列库、多平台版 lifecycle-viewmodel 和 navigation。不要凭记忆写版本号，也不要使用发布不到两周的版本。
-3. 第一次提交之前，先放好 `.gitignore`。至少要排除：
-   - `*.png`、`*.jpg`、`*.jpeg`、`*.heic`（`docs/` 下面用于 README 的虚构截图，以后用白名单单独放行）
-   - `private/`、`*.slbackup`、`local.properties`、`.env*`、`*.jks`、`*.keystore`
-   - 构建产物和 IDE 文件
-4. 在 GitHub 上建公开仓库 `snapledger`（MIT 协议）、推送代码之前，**先问用户**。
-5. 提示词实测需要用户提供真实截图：让用户把截图和 AI 的输出都放在 `C:\dev\snapledger-private\`（仓库外）。你只汇报准确率和需要改进的地方，**不要把任何真实值写进仓库里的文件**。
+用户手上：桌面上有 `SnapLedger-0.4.0-安装包.exe` 和 `SnapLedger.apk`。**安装时不能选 D 盘**（Windows Installer 在 D 盘建 `Config.Msi` 会报错 5），用默认位置。
 
-## 3. 文档里没有写全的背景
+## 3. 下一步候选（等用户选，推荐顺序）
 
-需求阶段，用户提供过汇丰英国 App 的真实截图（数值不在这里复述）。下面是从截图里观察到的**结构特征**，写解析逻辑、设计测试样例、调整提示词时会用到：
+1. **M0 提示词实测第 2 轮**：用户把截图和两家 AI 的输出放到 `C:\dev\snapledger-private\prompt-test\batch-02\`，对账单 PDF 也在 `C:\dev\snapledger-private\`。以对账单为标准答案逐条比对，只汇报比例，**真实数值不写进仓库**。
+2. **阶段 C（边用边补）**：手动记一笔、搜索、分类管理、"本人姓名"规则（自己转给自己 → TRANSFER）、图表和趋势、指纹解锁、中英双语。按用户实际使用中的反馈排优先级。
+3. **发布流程**：打 tag 后用 GitHub Actions 自动生成 exe 和 apk，放到 Releases 页面。
+4. **iPhone**：用户没有 Mac。两条路已经讨论过：KMP 的 iOS 版（GitHub macOS runner 编译，安装用 TestFlight $99/年，或者 Sideloadly 免费但 7 天要重签）；或者微信小程序（要另写一套界面，存储约 10MB）。建议排在阶段 C 之后。
+5. v1.1：本地解析 PDF 对账单（ADR-011）。
 
-- 页面最上方是 **Pending** 区域，每行自带日期，格式是 `3 Sep 2026`。下面是 **Completed** 区域，按天分组。
-- Completed 的分组标题格式是 `Wednesday, 2 Sep 2026 ———— £X,XXX.XX`，右侧是**当天的日终余额**。用户验算过一天的数据：前一天余额减去当天的交易，正好等于当天余额。
-- Completed 里的每一行**不带日期**，日期取上方最近的分组标题。
-- 每一行的格式：第一行是商户名（可能被截断，例如 `SOME CHICKEN SHOP, LEE`），第二行是地点（例如 `LEEDS GB`）或个人转账的附言；金额在右侧，支出的格式是 `- £ 12.40`。支出行左边有一个向上箭头的图标。收入行长什么样**还没见过**，要在 M0 实测时确认。
-- 转给个人的款项，第一行是对方的姓名，第二行是附言。
-- `Revolut**NNNN*` 这类描述是**付给别人的 Revolut 账户**，不是用户自己的账户，按普通支出处理。
-- 同一家店当天的交易，Pending 和 Completed 两个区域里的描述格式可能不同。这正是 MVP 跳过 Pending 的原因。
-- 用户用 iPhone 截图，在安卓手机和 Windows 电脑上都会导入；一般每两三天到一周导入一次。
+## 4. 构建（这台 Windows 机器的坑）
 
-## 4. 用户的偏好
+- 必须先设置短路径的临时目录，否则 Gradle 报 "Unable to establish loopback connection"：
 
-- 倾向于接受理由充分的推荐。给出明确的推荐，不要列一长串选项让用户自己选。
-- 期望渐进推进：每完成一个里程碑停下来汇报，等确认后再继续。
+  ```powershell
+  $env:TEMP="C:\dev\.tmp"; $env:TMP="C:\dev\.tmp"; $env:JAVA_TOOL_OPTIONS="-Djdk.net.unixdomain.tmpdir=C:\dev\.tmp"
+  ```
+
+  PowerShell 里运行 Gradle 要关掉沙箱（`dangerouslyDisableSandbox`），并用 `cmd /c "C:\dev\snapledger\gradlew.bat ..."`。改了 TEMP 以后要先执行一次 `gradlew --stop`。
+- 常用命令：`build`（编译、测试、ktlint、detekt、Android lint，包括桌面 UI 测试）、`ktlintFormat`、`:desktopApp:run`、`:desktopApp:packageExe`、`:androidApp:assembleDebug`。
+- 桌面 UI 测试会把各页面截图写到 `desktopApp/build/screenshots/`（含 `theme-light-*`、`theme-dark-*`），改界面后看这些图就能检查。
+- 安卓：SDK 在 `E:\Android\Sdk`，模拟器 AVD 叫 `snapledger_api36`。用 adb 发分享请求要先把脚本推到设备上执行（PowerShell 会吞掉参数里的引号），见 git 历史里阶段 B 的做法。
+- gitleaks 在 `%LOCALAPPDATA%\Microsoft\WinGet\Links`，Bash 里要先把这个目录加进 PATH，pre-commit 钩子才能找到它。
+- `gh` 已登录，CI 状态用 `gh run list` / `gh run watch` 查看。
+
+## 5. 代码地图
+
+- `core`（纯 Kotlin）：`importer/`（解析、截图对齐、对账、导入流水线）、`category/`（分类表、内置规则、分类器）、`ledger/`（模型、仓库接口、统计、备份接口）、`prompt/AiPrompt.kt`。
+- `data`：SQLDelight 的 `Ledger.sq`、`SqlLedgerRepository`、`backup/`（加密在 `jvmShared` 源码集里）。
+- `ui`：`App.kt`（导航）、四个页面、`theme/Theme.kt`、`Components.kt`、`PromptCard.kt`。
+- `desktopApp` / `androidApp`：入口、文件选择、分享菜单。
+- 测试：core 24 个、data 10 个（含加密已知答案测试，期望值由 Node.js 生成）、desktop UI 3 个。
+
+## 6. 真实数据（硬性规则，见 CLAUDE.md 第 1 条）
+
+用户发过真实截图、AI 输出和汇丰对账单 PDF。这些只用来理解问题，**任何真实数值、姓名、账号都不能写进仓库**。私人文件只放在 `C:\dev\snapledger-private\`。
