@@ -30,7 +30,10 @@ complexity:
     thresholdInClasses: 15
     thresholdInObjects: 15
     thresholdInFiles: 20
+  # Compose layout functions are long and branchy by nature; logic lives in core and is held to the limits.
   CyclomaticComplexMethod:
     ignoreSimpleWhenEntries: true
+    ignoreAnnotated: ['Composable']
   LongMethod:
     excludes: ['**/jvmTest/**', '**/commonTest/**']
+    ignoreAnnotated: ['Composable']

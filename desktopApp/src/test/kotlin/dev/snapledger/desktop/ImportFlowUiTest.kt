@@ -38,8 +38,11 @@ class ImportFlowUiTest {
 
     @Test
     fun pasteConfirmReimportAndBrowse() {
-        val repository = JvmDatabase.open(null)
-        rule.setContent { App(repository, SqlLedgerRepository.DEFAULT_ACCOUNT_ID, SqlLedgerRepository.DEFAULT_CURRENCY) }
+        val store = JvmDatabase.open(null)
+        val repository = store.repository
+        rule.setContent {
+            App(repository, store.backup, DesktopFiles(), SqlLedgerRepository.DEFAULT_ACCOUNT_ID, SqlLedgerRepository.DEFAULT_CURRENCY)
+        }
 
         rule.onNodeWithText("导入").performClick()
         screenshot("1-import-empty")
@@ -68,5 +71,9 @@ class ImportFlowUiTest {
         rule.onNodeWithText("‹ 上个月").performClick()
         rule.onNodeWithText("2026年9月").assertExists()
         screenshot("5-overview-september")
+
+        rule.onNodeWithText("设置").performClick()
+        rule.onNodeWithText("导出备份…").assertExists()
+        screenshot("6-settings")
     }
 }

@@ -152,3 +152,63 @@ SELECT * FROM import_batch WHERE account_id = ? ORDER BY imported_at DESC;
 
 markBatchUndone:
 UPDATE import_batch SET deleted_at = :now, updated_at = :now WHERE id = :id;
+
+-- backup / merge (all rows, including soft-deleted ones) ---------------------
+
+allAccounts:
+SELECT * FROM account;
+
+allTransactions:
+SELECT * FROM txn;
+
+allBalances:
+SELECT * FROM daily_balance;
+
+allRules:
+SELECT * FROM user_rule;
+
+allBatches:
+SELECT * FROM import_batch;
+
+insertAccountFull:
+INSERT INTO account VALUES ?;
+
+updateAccountFull:
+UPDATE account SET name = ?, institution = ?, currency = ?, type = ?, updated_at = ?, deleted_at = ? WHERE id = ?;
+
+transactionById:
+SELECT * FROM txn WHERE id = ?;
+
+insertTransactionFull:
+INSERT INTO txn VALUES ?;
+
+updateTransactionFull:
+UPDATE txn SET
+    account_id = ?, date = ?, direction = ?, amount_minor = ?, currency = ?, type = ?, category_code = ?,
+    classification_source = ?, merchant = ?, counterparty_type = ?, raw_description = ?, fingerprint = ?,
+    note = ?, origin = ?, import_batch_id = ?, updated_at = ?, deleted_at = ?
+WHERE id = ?;
+
+insertBalanceFull:
+INSERT INTO daily_balance VALUES ?;
+
+updateBalanceFull:
+UPDATE daily_balance SET
+    balance_minor = ?, currency = ?, import_batch_id = ?, previous_balance_minor = ?, previous_batch_id = ?,
+    updated_at = ?, deleted_at = ?
+WHERE id = ?;
+
+insertRuleFull:
+INSERT INTO user_rule VALUES ?;
+
+updateRuleFull:
+UPDATE user_rule SET category_code = ?, updated_at = ?, deleted_at = ? WHERE id = ?;
+
+batchById:
+SELECT * FROM import_batch WHERE id = ?;
+
+insertBatchFull:
+INSERT INTO import_batch VALUES ?;
+
+updateBatchFull:
+UPDATE import_batch SET updated_at = ?, deleted_at = ? WHERE id = ?;

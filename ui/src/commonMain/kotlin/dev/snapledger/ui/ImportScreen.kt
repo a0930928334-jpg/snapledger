@@ -3,6 +3,8 @@ package dev.snapledger.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -282,7 +284,7 @@ private fun ReconciliationLine(
     Banner(text, color)
 }
 
-@Suppress("LongMethod", "CyclomaticComplexMethod") // Layout of one editable row.
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PreviewRowCard(
     ledger: LedgerState,
@@ -321,7 +323,8 @@ private fun PreviewRowCard(
                 color = if (row.direction == Direction.IN) StatusColors.inflow else StatusColors.outflow,
             )
         }
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        // Wraps onto several lines on a phone instead of pushing the pickers off screen.
+        FlowRow(itemVerticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             DateField(row) { date -> state.updateRow(row.id) { it.copy(date = date, uncertainFields = it.uncertainFields - "date") } }
             AmountField(row) { minor ->
                 state.updateRow(row.id) {

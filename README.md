@@ -2,7 +2,7 @@
 
 A local-first personal finance app for Android and Windows. Bank-statement screenshots are turned into structured JSON by a general-purpose AI (ChatGPT or Claude); SnapLedger then validates, aligns overlapping screenshots, deduplicates, reconciles against end-of-day balances, auto-categorises and reports.
 
-> Status: phase A of the fast track — a minimal but working Windows version (import, preview, ledger, monthly overview).
+> Status: phase B of the fast track — works on Windows and Android: import (paste, clipboard, Android share sheet), preview, ledger, monthly overview, and password-encrypted backups to sync the two devices (Settings → 设置).
 
 ## Principles
 

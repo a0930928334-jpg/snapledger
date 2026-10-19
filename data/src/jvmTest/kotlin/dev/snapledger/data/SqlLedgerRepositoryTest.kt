@@ -30,7 +30,7 @@ class SqlLedgerRepositoryTest {
 
     @Test
     fun importTwiceThenUndo() {
-        val repo = JvmDatabase.open(null)
+        val repo = JvmDatabase.open(null).repository
         val (firstBatch, firstAdded) = importSample(repo, "example-1-basic.json")
         assertEquals(4, firstAdded)
         assertEquals(4, repo.snapshot(DEFAULT_ACCOUNT_ID).transactions.size)
@@ -50,7 +50,7 @@ class SqlLedgerRepositoryTest {
 
     @Test
     fun undoRestoresOverwrittenBalance() {
-        val repo = JvmDatabase.open(null)
+        val repo = JvmDatabase.open(null).repository
         importSample(repo, "example-1-basic.json")
         val changed = sample("example-1-basic.json").replace("\"1509.50\"", "\"1500.00\"")
         val snapshot = repo.snapshot(DEFAULT_ACCOUNT_ID)
